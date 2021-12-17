@@ -27,6 +27,23 @@ def checkout():
     )
 
 
+@bp.route("/checkout-hosted")
+def checkout_hosted():
+    product = {
+        "name": "An apple pie",
+        "description": "It's a pie made from apples.",
+        "price": 3.14,
+    }
+
+    return render_template(
+        "checkout_hosted.html",
+        product=product,
+        partner_client_id=PARTNER_CLIENT_ID,
+        payee_merchant_id=PAYEE_MERCHANT_ID,
+        bn_code=MERCHANT_BN_CODE,
+    )
+
+
 @bp.route("/order-details/<order_id>")
 def order_details(order_id):
     order_details_dict = get_order_details(order_id)
