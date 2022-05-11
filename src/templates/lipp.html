@@ -1,0 +1,19 @@
+<span id='lippButton'></span>
+<script src='https://www.paypalobjects.com/js/external/api.js'></script>
+<script>
+paypal.use( ['login'], function (login) {
+  login.render ({
+    "appid":"AVgS5wXOrdukGXaSkI2ahOU6H6mLHsamWXhb41IdzRWtQ-T6Qt79EcNWlXgMTY3EdyqRZpctbElt0Lfr",
+    "authend": "sandbox",
+    "scopes": "https://uri.paypal.com/services/paypalattributes https://uri.paypal.com/services/paypalattributes email",
+    "containerid":"lippButton",
+    "responseType":"code id_Token",
+    "locale":"en-us",
+    "buttonType":"LWP",
+    "buttonShape":"pill",
+    "buttonSize":"lg",
+    "fullPage":"false",
+    "returnurl":"https://example.com"
+  });
+});
+</script>
