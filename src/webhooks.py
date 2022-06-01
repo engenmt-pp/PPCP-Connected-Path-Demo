@@ -1,8 +1,7 @@
 import json
 
 from flask import Blueprint, current_app, request
-
-from .api import verify_webhook_signature
+from .api.webhooks import verify_webhook_signature
 
 
 bp = Blueprint("webhooks", __name__, url_prefix="/webhooks")
@@ -38,8 +37,7 @@ def to_verification_dict(webhook_headers, webhook_body, webhook_id=None):
 
 @bp.route("/", methods=("POST",))
 def listener():
-
-    webhook_body = request.json
+    webhook_body = request.json()
     print(f"Webhook received:\n{json.dumps(webhook_body, indent=2)}")
 
     webhook_headers = request.headers

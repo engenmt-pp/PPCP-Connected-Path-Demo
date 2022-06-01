@@ -1,7 +1,7 @@
 import json
 
 from flask import Blueprint, current_app, render_template
-from .api import get_order_details
+from .api.orders import get_details
 
 bp = Blueprint("store", __name__, url_prefix="/store")
 
@@ -43,6 +43,6 @@ def checkout(template, partner_client_id=None, payee_id=None, bn_code=None):
 
 @bp.route("/order-details/<order_id>")
 def order_details(order_id):
-    order_details_dict = get_order_details(order_id)
+    order_details_dict = get_details(order_id)
     order_details_str = json.dumps(order_details_dict, indent=2)
     return render_template("status.html", status=order_details_str)

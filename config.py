@@ -5,7 +5,7 @@ flask.cli.load_dotenv()
 
 
 class Config(object):
-    pass
+    REPORTS_DIR = "/ppreports/outgoing"
 
 
 class DevelopmentConfig(Config):
