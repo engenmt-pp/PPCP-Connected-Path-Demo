@@ -244,6 +244,10 @@ def capture_order(order_id):
     endpoint = build_endpoint(f"/v2/checkout/orders/{order_id}/capture")
     headers = build_headers()
 
+    headers["PayPal-Mock-Response"] = json.dumps(
+        {"mock_application_codes": "PAYEE_ACCOUNT_NOT_VERIFIED"}
+    )
+
     response = log_and_request("POST", endpoint, headers=headers)
     response_dict = response.json()
     return jsonify(response_dict)

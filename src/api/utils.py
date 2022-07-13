@@ -29,26 +29,38 @@ def log_and_request(method, endpoint, **kwargs):
     if method not in methods_dict:
         raise Exception(f"HTTP request method '{method}' not recognized!")
 
-    try:
-        kwargs_str = json.dumps(kwargs, indent=2)
-    except TypeError:
-        kwargs_str = str(kwargs)
-
-    current_app.logger.debug(f"\nSending {method} request to {endpoint}:\n{kwargs_str}")
+    bar = f"\n{'='*80}\n"
+    current_app.logger.debug(f"{bar}Sending {method} request to {endpoint}:")
 
     if "data" in kwargs:
-        kwargs["data"] = json.dumps(kwargs["data"])
+        data = kwargs["data"]
+        if isinstance(data, dict):
+            current_app.logger.debug(f"data = {json.dumps(data, indent=2)}")
+            kwargs["data"] = json.dumps(data)
 
     response = methods_dict[method](endpoint, **kwargs)
+
+    headers_sent = dict(response.request.headers)
+    current_app.logger.debug(f"Headers sent: {json.dumps(headers_sent, indent=2)}")
     try:
         response_str = json.dumps(response.json(), indent=2)
     except json.decoder.JSONDecodeError:
         response_str = response.text
 
-    if not response.ok:
-        current_app.logger.error(f"{response.status_code} Error: {response_str}\n\n")
+    debug_id = response.headers.get("PayPal-Debug-Id", None)
+    if debug_id is not None:
+        debug_prefix = f"(debug_id: {debug_id}) "
     else:
-        current_app.logger.debug(f"{response.status_code} Response: {response_str}\n\n")
+        debug_prefix = ""
+
+    if not response.ok:
+        current_app.logger.error(
+            f"{debug_prefix}{response.status_code} Error: {response_str}{bar}"
+        )
+    else:
+        current_app.logger.debug(
+            f"{debug_prefix}{response.status_code} Response: {response_str}{bar}"
+        )
 
     return response
 
