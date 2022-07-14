@@ -22,6 +22,14 @@ def apple_pie():
     }
 
 
+def golf_disc():
+    return {
+        "name": "Golf Disc",
+        "description": "It's a *very* nice golf disc.",
+        "price": 100.00,
+    }
+
+
 @bp.route("/checkout")
 def checkout_capture():
     template = "checkout.html"
@@ -74,7 +82,7 @@ def checkout(template, partner_client_id=None, payee_id=None, bn_code=None, **kw
     if bn_code is None:
         bn_code = current_app.config["PARTNER_BN_CODE"]
 
-    product = apple_pie()
+    product = golf_disc()
 
     return render_template(
         template,

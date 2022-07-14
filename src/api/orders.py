@@ -61,7 +61,7 @@ def create_order(include_platform_fees=True):
     if include_platform_fees:
         data["purchase_units"][0]["payment_instruction"] = {
             "disbursement_mode": "INSTANT",
-            "platform_fees": [{"amount": {"currency_code": "USD", "value": "1.00"}}],
+            "platform_fees": [{"amount": {"currency_code": "USD", "value": "50.00"}}],
         }
 
     if request.json.get("include_shipping", False):
