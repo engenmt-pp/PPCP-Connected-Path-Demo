@@ -124,7 +124,7 @@ def create_partner_referral_v2(tracking_id, return_url):
                 },
             }
         ],
-        "products": ["PPCP"],
+        "products": ["EXPRESS_CHECKOUT"],
         "legal_consents": [
             {
                 "type": "SHARE_DATA_CONSENT", 
