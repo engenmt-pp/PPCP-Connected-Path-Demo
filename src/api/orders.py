@@ -8,15 +8,48 @@ from .utils import build_endpoint, build_headers, log_and_request, random_decima
 bp = Blueprint("orders", __name__, url_prefix="/orders")
 
 
-def default_purchase_unit(payee_id, price):
+def purchase_unit_itemized(payee_id, price):
+    item_price = round(float(price), 2)
+
+    tax_rate = 0.1  # 10 percent
+    tax_price = round(tax_rate * item_price, 2)
+
+    shipping_cost = 10.0
+
+    total_cost = round(item_price + tax_price + shipping_cost, 2)
     return {
         "custom_id": "Up to 127 characters can go here!",
+        "payee": {"merchant_id": payee_id},
+        "payment_instruction": {"disbursement_mode": "INSTANT"},
+        "amount": {
+            "currency_code": "USD",
+            "value": total_cost,
+            "breakdown": {
+                "item_total": {"currency_code": "USD", "value": item_price},
+                "tax_total": {"currency_code": "USD", "value": tax_price},
+                "shipping": {"currency_code": "USD", "value": shipping_cost},
+            },
+        },
+        "items": [
+            {
+                "name": "Apple Pie",
+                "description": "It's an apple pie with a short crust pastry.",
+                "unit_amount": {"currency_code": "USD", "value": item_price},
+                "tax": {"currency_code": "USD", "value": tax_price},
+                "quantity": 1,
+                "category": "PHYSICAL_GOODS",
+            }
+        ],
+    }
+
+
+def purchase_unit_minimal(payee_id, price):
+    return {
         "payee": {"merchant_id": payee_id},
         "amount": {
             "currency_code": "USD",
             "value": price,
         },
-        "soft_descriptor": "1234567890111213141516",
     }
 
 
@@ -50,7 +83,7 @@ def create_order(include_platform_fees=True):
     price = request.json["price"]
     data = {
         "intent": "CAPTURE",
-        "purchase_units": [default_purchase_unit(payee_id, price)],
+        "purchase_units": [purchase_unit_minimal(payee_id, price)],
         "application_context": {
             "return_url": "http://localhost:5000/",
             "cancel_url": "http://localhost:5000/",
@@ -105,7 +138,7 @@ def create_order_vault():
                 }
             }
         },
-        "purchase_units": [default_purchase_unit(payee_id, price)],
+        "purchase_units": [purchase_unit_minimal(payee_id, price)],
         "application_context": {
             "return_url": "http://localhost:5000/",
             "cancel_url": "http://localhost:5000/",
@@ -156,7 +189,7 @@ def order_not_present():
             },
             "vault": {"usage_type": "PLATFORM", "customer_type": "CONSUMER"},
         },
-        "purchase_units": [default_purchase_unit(payee_id, price)],
+        "purchase_units": [purchase_unit_minimal(payee_id, price)],
     }
 
     response = log_and_request("POST", endpoint, headers=headers, data=data)
@@ -180,7 +213,7 @@ def create_order_auth():
     price = request.json["price"]
     data = {
         "intent": "AUTHORIZE",
-        "purchase_units": [default_purchase_unit(payee_id, price)],
+        "purchase_units": [purchase_unit_minimal(payee_id, price)],
         "application_context": {"shipping_preference": "GET_FROM_FILE"},
     }
 
